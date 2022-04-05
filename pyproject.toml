@@ -6,6 +6,8 @@ authors = ["Daniel Kozłowski <dkozlowski@cerebre.io>"]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.10"
+pathlib = "^1.0.1"
+isort = "^5.10.1"
 
 
 [tool.poetry.dev-dependencies]
