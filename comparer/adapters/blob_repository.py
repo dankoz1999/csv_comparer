@@ -5,6 +5,7 @@ from comparer.domain.repositories import FileRepository
 from comparer.domain.utils import find_file
 
 
+# TODO add blob repository from scraper
 class BlobRepository(FileRepository):
     def __init__(
         self,
