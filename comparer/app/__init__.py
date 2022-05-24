@@ -9,5 +9,8 @@ class Application:
         self.file_repo = file_repo
         self.debug = debug
 
-    def basic_statistics(filepath: Path, chosen_files: List[str]) -> None:
-        pass
+    def basic_statistics(self, chosen_files: List[Path]) -> None:
+        return None
+
+    def full_statistics(file, chosen_files: List[Path]) -> None:
+        return None

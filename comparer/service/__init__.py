@@ -1,29 +1,31 @@
 from pathlib import Path
 from typing import List
 
-from comparer.adapters.disk_repository import DiskRepository
-from comparer.app import Application
-from comparer.domain.repositories import FileRepository
+from adapters.disk_repository import DiskRepository
+from app import Application
+from domain.repositories import FileRepository
 
 
 def new_application(
-    data_dir: Path,
-    output_dir: Path,
     chosen_files: List[str],
+    output_dir: Path,
     skip_hidden: bool = True,
     debug: bool = True,
 ) -> Application:
-    file_repo = resolve_diagram_repo(
-        data_dir, output_dir, chosen_files, skip_hidden, debug
+
+    file_repo = DiskRepository(
+        chosen_files=[Path(f) for f in chosen_files],
+        output_dir=output_dir,
+        skip_hidden=skip_hidden,
+        debug=debug,
     )
 
     return Application(file_repo=file_repo, debug=debug)
 
 
 def resolve_diagram_repo(
-    data_dir: Path,
-    output_dir: Path,
     chosen_files: List[str],
+    output_dir: Path,
     skip_hidden: bool = True,
     debug: bool = True,
 ) -> FileRepository:
@@ -52,4 +54,4 @@ def resolve_diagram_repo(
     #     )
     # else:
 
-    return DiskRepository(data_dir, output_dir, chosen_files, skip_hidden, debug)
+    return DiskRepository(chosen_files, output_dir, skip_hidden, debug)
