@@ -1,8 +1,8 @@
 from pathlib import Path
 from typing import List, Set
 
-from comparer.domain.repositories import FileRepository
-from comparer.domain.utils import find_file
+from comparer.templates import FileRepository
+from comparer.utils import find_file
 
 
 # TODO add blob repository from scraper

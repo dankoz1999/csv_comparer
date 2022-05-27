@@ -1,9 +1,9 @@
 from pathlib import Path
 from typing import List
 
-from adapters.disk_repository import DiskRepository
-from app import Application
-from domain.repositories import FileRepository
+from comparer.app import Application
+from comparer.storage_repos.disk_repository import DiskRepository
+from comparer.templates import FileRepository
 
 
 def new_application(

@@ -1,7 +1,7 @@
 import sys
 from datetime import datetime
 
-from ports.cli import Cli
+from comparer.cli import Cli
 
 
 # just main entry point

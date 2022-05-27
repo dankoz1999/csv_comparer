@@ -1,8 +1,8 @@
 from pathlib import Path
 from typing import List, Set
 
-from domain.repositories import FileRepository
-from domain.utils import find_file
+from comparer.templates import FileRepository
+from comparer.utils import find_file
 
 
 class DiskRepository(FileRepository):

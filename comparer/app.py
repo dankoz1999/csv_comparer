@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import List
 
-from domain.repositories import FileRepository
+from comparer.templates import FileRepository
 
 
 class Application:

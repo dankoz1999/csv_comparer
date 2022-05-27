@@ -3,13 +3,14 @@ LIBS = ${MODULE} tests
 PYTHON = poetry run python
 PRECOMMIT = poetry run pre-commit
 
-FILES_DIR = data
+FILES_IN = tests/data
+FILES_OUT = tests/data_out
 
 .PHONY: clean fmt lint test init shell run-stack down-stack scrape
 
 define run_comparer
 		${PYTHON} -m ${MODULE} --mode $(1) \
-		--files_dir ${FILES_DIR} --output_dir ${FILES_DIR} \
+		--chosen-files ${FILES_IN} --output-dir ${FILES_OUT} \
 		--debug
 endef
 
@@ -42,4 +43,9 @@ lint: poetry.lock
 	@${PYTHON} -m mypy ${LIBS}
 	@${PYTHON} -m bandit --configfile .bandit.yaml --recursive ${LIBS}
 
-#TODO add comparision methods
+
+basic_statistics: poetry.lock
+	@$(call run_comparer, basic_statistics)
+
+full_statistics: poetry.lock
+	@$(call run_comparer, full_statistics)

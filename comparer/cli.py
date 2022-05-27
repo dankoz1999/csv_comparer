@@ -4,8 +4,8 @@ import argparse
 from pathlib import Path
 from typing import List
 
-from app import Application
-from service import new_application
+from comparer.app import Application
+from comparer.service import new_application
 
 
 class Cli:
@@ -24,10 +24,10 @@ class Cli:
 
     @classmethod
     def new_cli_app(cls, args: List[str]) -> Cli:
-        parsed_args = Cli.parse_args(args)
+        parsed_args = Cli.parse_args(*args)
         app = new_application(
             chosen_files=parsed_args.chosen_files,
-            output_dir=parsed_args.chosen_dir,
+            output_dir=parsed_args.output_dir,
             skip_hidden=parsed_args.skip_hidden,
             debug=parsed_args.debug,
         )
