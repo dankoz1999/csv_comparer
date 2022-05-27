@@ -49,3 +49,6 @@ basic_statistics: poetry.lock
 
 full_statistics: poetry.lock
 	@$(call run_comparer, full_statistics)
+
+visualize: poetry.lock
+	@$(call run_comparer, visualize)

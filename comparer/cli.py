@@ -10,7 +10,7 @@ from comparer.service import new_application
 
 class Cli:
 
-    modes = {"basic_statistics", "full_statistics"}
+    modes = {"basic_statistics", "full_statistics", "visualize"}
 
     def __init__(self, app: Application, mode: str) -> None:
         self.app = app
@@ -18,6 +18,7 @@ class Cli:
         self.mode_flow = {
             "basic_statistics": self.basic_stat_flow,
             "full_statistics": self.full_statistics_flow,
+            "visualize": self.visualize_flow
         }
         if not self.modes == set(self.mode_flow.keys()):
             raise ValueError("Incorrect modes!")
@@ -47,6 +48,9 @@ class Cli:
 
     def full_statistics_flow(self, chosen_files: List[Path]) -> int:
         return self.app.full_statistics(chosen_files)
+
+    def visualize_flow(self, chosen_files: List[Path]) -> int:
+        return self.app.visualize(chosen_files)
 
     @staticmethod
     def parse_args(*args: str) -> argparse.Namespace:

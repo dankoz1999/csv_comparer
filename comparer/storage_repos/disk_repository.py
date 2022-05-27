@@ -1,9 +1,11 @@
 from pathlib import Path
 from typing import List, Set
+from comparer import get_logger
 
 from comparer.templates import FileRepository
 from comparer.utils import find_file
 
+logger = get_logger()
 
 class DiskRepository(FileRepository):
     def __init__(
@@ -21,8 +23,8 @@ class DiskRepository(FileRepository):
     def get_files(self) -> List[Path]:
         res: Set[Path] = set()
         for chosen in self.chosen_files:
-            files = find_file(chosen, "csv$", self.skip_hidden)
+            files = find_file(chosen, "*csv", self.skip_hidden)
             if self.debug:
-                print(f"Found {len(files)} {chosen} files")
+                logger.debug(f"Found {len(files)} {chosen} files")
             res.update(files)
         return [r for r in res]

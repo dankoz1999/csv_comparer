@@ -8,7 +8,6 @@ T = TypeVar("T")
 def find_file(root: Path, name: str, skip_hidden: bool = True) -> List[Path]:
 
     res: List[Path] = []
-
     for path in root.rglob(name):
         res.append(path.resolve())
     res = [r for r in res if r.is_file()]
