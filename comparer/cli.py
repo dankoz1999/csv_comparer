@@ -18,7 +18,7 @@ class Cli:
         self.mode_flow = {
             "basic_statistics": self.basic_stat_flow,
             "full_statistics": self.full_statistics_flow,
-            "visualize": self.visualize_flow
+            "visualize": self.visualize_flow,
         }
         if not self.modes == set(self.mode_flow.keys()):
             raise ValueError("Incorrect modes!")
@@ -91,7 +91,10 @@ class Cli:
         )
 
         parser.add_argument(
-            "--debug", help="decide wheter you want more info", action="store_true"
+            "--debug",
+            help="decide wheter you want more info",
+            action="store_true",
+            default=False,
         )
 
         namespace = parser.parse_args(args)

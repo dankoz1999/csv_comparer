@@ -10,8 +10,7 @@ FILES_OUT = tests/data_out
 
 define run_comparer
 		${PYTHON} -m ${MODULE} --mode $(1) \
-		--chosen-files ${FILES_IN} --output-dir ${FILES_OUT} \
-		--debug
+		--chosen-files ${FILES_IN} --output-dir ${FILES_OUT} 
 endef
 
 .git/hooks/pre-commit:

@@ -7,6 +7,7 @@ import sys
 # log level
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "debug").upper()
 
+
 def get_logger() -> logging.Logger:
     """
     utility function to get a unified logger for the whole project
