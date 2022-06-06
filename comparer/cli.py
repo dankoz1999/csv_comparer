@@ -10,14 +10,14 @@ from comparer.service import new_application
 
 class Cli:
 
-    modes = {"basic_statistics", "full_statistics", "visualize"}
+    modes = {"basic_statistics", "show_difference", "visualize"}
 
     def __init__(self, app: Application, mode: str) -> None:
         self.app = app
         self.mode = mode
         self.mode_flow = {
             "basic_statistics": self.basic_stat_flow,
-            "full_statistics": self.full_statistics_flow,
+            "show_difference": self.show_difference_flow,
             "visualize": self.visualize_flow,
         }
         if not self.modes == set(self.mode_flow.keys()):
@@ -28,8 +28,9 @@ class Cli:
         parsed_args = Cli.parse_args(*args)
         app = new_application(
             chosen_files=parsed_args.chosen_files,
-            output_dir=parsed_args.output_dir,
+            output_dir=Path(*parsed_args.output_dir),
             skip_hidden=parsed_args.skip_hidden,
+            show_exceptions=parsed_args.show_exceptions,
             debug=parsed_args.debug,
         )
         mode = parsed_args.mode
@@ -46,8 +47,8 @@ class Cli:
     def basic_stat_flow(self, chosen_files: List[Path]) -> int:
         return self.app.basic_statistics(chosen_files)
 
-    def full_statistics_flow(self, chosen_files: List[Path]) -> int:
-        return self.app.full_statistics(chosen_files)
+    def show_difference_flow(self, chosen_files: List[Path]) -> int:
+        return self.app.show_difference(chosen_files)
 
     def visualize_flow(self, chosen_files: List[Path]) -> int:
         return self.app.visualize(chosen_files)
@@ -60,7 +61,7 @@ class Cli:
         parser.add_argument(
             "--mode",
             choices=Cli.modes,
-            help="chose wheter you want to obtain basic funcionality or full statistics [basic_statistics, full_statistics]",
+            help="chose wheter you want to obtain basic funcionality or show difference [basic_statistics, show_difference]",
             default="basic_statistics",
             required=True,
         )
@@ -95,6 +96,13 @@ class Cli:
             help="decide wheter you want more info",
             action="store_true",
             default=False,
+        )
+
+        parser.add_argument(
+            "--show-exceptions",
+            help="show/hide files with exceptions or problems",
+            action="store_true",
+            default=False
         )
 
         namespace = parser.parse_args(args)

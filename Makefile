@@ -5,6 +5,7 @@ PRECOMMIT = poetry run pre-commit
 
 FILES_IN = tests/data
 FILES_OUT = tests/data_out
+#TODO add print exceptions t/f
 
 .PHONY: clean fmt lint test init shell run-stack down-stack scrape
 
@@ -46,8 +47,8 @@ lint: poetry.lock
 basic_statistics: poetry.lock
 	@$(call run_comparer, basic_statistics)
 
-full_statistics: poetry.lock
-	@$(call run_comparer, full_statistics)
+show_difference: poetry.lock
+	@$(call run_comparer, show_difference)
 
 visualize: poetry.lock
 	@$(call run_comparer, visualize)

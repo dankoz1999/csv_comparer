@@ -9,17 +9,8 @@ logger = get_logger()
 
 
 class DiskRepository(FileRepository):
-    def __init__(
-        self,
-        chosen_files: List[Path],
-        output_dir: Path,
-        skip_hidden: bool = True,
-        debug: bool = False,
-    ) -> None:
-        self.output_dir = output_dir
-        self.chosen_files = chosen_files
-        self.skip_hidden = skip_hidden
-        self.debug = debug
+    def __init__(self, chosen_files: List[Path], output_dir: Path, skip_hidden: bool = True, debug: bool = False) -> None:
+        super().__init__(chosen_files, output_dir, skip_hidden, debug)
 
     def get_files(self) -> List[Path]:
         res: Set[Path] = set()

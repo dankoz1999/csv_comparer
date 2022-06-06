@@ -1,3 +1,4 @@
+from importlib.resources import path
 from pathlib import Path
 from typing import List
 
@@ -10,6 +11,7 @@ def new_application(
     chosen_files: List[str],
     output_dir: Path,
     skip_hidden: bool = True,
+    show_exceptions: bool = False,
     debug: bool = True,
 ) -> Application:
 
@@ -20,7 +22,7 @@ def new_application(
         debug=debug,
     )
 
-    return Application(file_repo=file_repo, debug=debug)
+    return Application(file_repo=file_repo,show_exceptions=show_exceptions,debug=debug)
 
 
 def resolve_diagram_repo(

@@ -7,8 +7,17 @@ import pandas as pd
 
 
 class FileRepository:
-    def __init__(self) -> None:
-        pass
+    def __init__(
+        self,
+        chosen_files: List[Path],
+        output_dir: Path,
+        skip_hidden: bool = True,
+        debug: bool = False,
+    ) -> None:
+        self.output_dir = output_dir
+        self.chosen_files = chosen_files
+        self.skip_hidden = skip_hidden
+        self.debug = debug
 
     @abstractmethod
     def get_files(self) -> List[Path]:

@@ -1,6 +1,6 @@
 from pathlib import Path
-from typing import List
-
+from typing import List, Tuple
+from csv_diff import load_csv, compare
 import numpy as np
 import pandas as pd
 
@@ -9,8 +9,9 @@ from comparer.templates import DataFrameWithInfo, FileRepository
 
 
 class Application:
-    def __init__(self, file_repo: FileRepository, debug: bool = False) -> None:
+    def __init__(self, file_repo: FileRepository, show_exceptions: bool, debug: bool = False) -> None:
         self.file_repo = file_repo
+        self.show_exceptions = show_exceptions
         self.debug = debug
         self.logger = get_logger()
 
@@ -18,10 +19,35 @@ class Application:
         df_list = self._assign_table(chosen_files)
         return self._summarize_basic(df_list, self.debug)
 
-    def full_statistics(self, chosen_files: List[Path]) -> None:
-        return None
+    def show_difference(self, chosen_files: List[Path]) -> None:
+        return self._show_difference(chosen_files, self.debug)
 
     def visualize(self, chosen_files: List[Path]) -> None:
+        return None
+
+    def _show_difference(self, chosen_files: List[Path], debug: bool) -> None:
+        bt_list: List[Path] = []
+        eq_list: List[Path] = []
+        sns_list: List[Path] = []
+
+        for path in chosen_files:
+            if "bottom_tables" in str(path):
+                bt_list.append(path)
+            elif "equipment" in str(path):
+                eq_list.append(path)
+            elif "tag_assignment" in str(path):
+                sns_list.append(path)
+            else:
+                raise ValueError("Csv file with invalid name!")
+
+        for comp_pre, comp in zip(bt_list, bt_list[1:]):
+            diff = compare(
+                load_csv(open(comp_pre)),
+                load_csv(open(comp))
+            )
+            for key, value in diff.items():
+                print(key)
+                print(value)
         return None
 
     def _summarize_basic(self, df_list: List[DataFrameWithInfo], debug: bool) -> None:
@@ -111,9 +137,9 @@ class Application:
                 df_number = self._sensors_preprocessing(df, debug)
                 len_fil = len(df["filename"].unique())
                 sns_number = df.shape[0] / df_number
-                self.logger.info(f"Found {sns_number} sensors")
+                self.logger.info(f"Found {int(sns_number)} sensors")
                 self.logger.info(
-                    f"Average number of sensors per diagram: {sns_number/len_fil} "
+                    f"Average number of sensors per diagram: {int(sns_number/len_fil)} "
                 )
                 to_long_sns = df.loc[
                     df["sensor_name"].str.len() > 15, "sensor_name"
@@ -166,7 +192,7 @@ class Application:
                 self.eq_count += 1
                 df_list.append(DataFrameWithInfo(df, "equipment", file))
             elif "tag_assignments" in str(file):
-                fields = ["sensor_name", "primary_equipment_count", "filename"]
+                fields = ["sensor_name", "primary_equipment_count", "filename", "equipment_code"]
                 df = pd.read_csv(str(file), sep=",", usecols=fields)
                 self.sns_count += 1
                 df_list.append(DataFrameWithInfo(df, "sensor", file))
@@ -200,9 +226,10 @@ class Application:
         if len(bad_diagrams) > 0:
             self.logger.info(f"There is not found eq in {len(bad_diagrams)} diagrams")
             self.logger.info("Fix them, if you want to have exact number of sensors!")
-            self.logger.info(" ")
-            self.logger.info("List of bad diagrams: ")
-            for diagram in bad_diagrams:
-                self.logger.info(f"--> {diagram}")
-            self.logger.info(" ")
+            if self.show_exceptions:
+                self.logger.info(" ")
+                self.logger.info("List of bad diagrams: ")
+                for diagram in bad_diagrams:
+                    self.logger.info(f"--> {diagram}")
+                self.logger.info(" ")
         return counter

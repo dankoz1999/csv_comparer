@@ -13,9 +13,9 @@ def run_cli() -> int:
 
 if __name__ == "__main__":
     start = datetime.now()
-    print(f"Creating headers started @ {start}")
+    print(f"Comparing started @ {start}")
     exit_code = run_cli()
     end = datetime.now()
-    print(f"Creating headers finished @ {end}")
-    print(f"Creating headers took: {end-start}")
+    print(f"Comparing finished @ {end}")
+    print(f"Comparing took: {end-start}")
     sys.exit(exit_code)

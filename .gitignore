@@ -5,6 +5,7 @@
 .DS_Store
 rd
 /data
+/tests
 # all temp directories for docker
 _*/
 .envrc
