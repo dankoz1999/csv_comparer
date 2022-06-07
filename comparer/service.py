@@ -1,4 +1,3 @@
-from importlib.resources import path
 from pathlib import Path
 from typing import List
 
@@ -22,7 +21,9 @@ def new_application(
         debug=debug,
     )
 
-    return Application(file_repo=file_repo,show_exceptions=show_exceptions,debug=debug)
+    return Application(
+        file_repo=file_repo, show_exceptions=show_exceptions, debug=debug
+    )
 
 
 def resolve_diagram_repo(

@@ -1,15 +1,18 @@
 from pathlib import Path
-from typing import List, Tuple
-from csv_diff import load_csv, compare
+from typing import List
+
 import numpy as np
 import pandas as pd
+from csv_diff import compare, load_csv
 
 from comparer import get_logger
 from comparer.templates import DataFrameWithInfo, FileRepository
 
 
 class Application:
-    def __init__(self, file_repo: FileRepository, show_exceptions: bool, debug: bool = False) -> None:
+    def __init__(
+        self, file_repo: FileRepository, show_exceptions: bool, debug: bool = False
+    ) -> None:
         self.file_repo = file_repo
         self.show_exceptions = show_exceptions
         self.debug = debug
@@ -23,6 +26,9 @@ class Application:
         return self._show_difference(chosen_files, self.debug)
 
     def visualize(self, chosen_files: List[Path]) -> None:
+        return self._visualize(chosen_files, self.debug)
+
+    def _visualize(self, chosen_files: List[Path], debug: bool) -> None:
         return None
 
     def _show_difference(self, chosen_files: List[Path], debug: bool) -> None:
@@ -41,19 +47,29 @@ class Application:
                 raise ValueError("Csv file with invalid name!")
 
         for comp_pre, comp in zip(bt_list, bt_list[1:]):
-            diff = compare(
-                load_csv(open(comp_pre)),
-                load_csv(open(comp))
-            )
+            diff = compare(load_csv(open(comp_pre)), load_csv(open(comp)))
             for key, value in diff.items():
-                print(key)
-                print(value)
+                if key in ["added", "removed", "changed"]:
+                    path = Path(str(self.file_repo.output_dir) + "/" + f"{key}.csv")
+                    print(key)
+                    for i, row in enumerate(value):
+                        if i == 0:
+                            fin = pd.DataFrame([row])
+                        else:
+                            fin = fin.append(row, ignore_index=True)
+                    fin.to_csv(path)
+
         return None
 
     def _summarize_basic(self, df_list: List[DataFrameWithInfo], debug: bool) -> None:
         first_bt = True
         first_eq = True
         first_sns = True
+        if not self.show_exceptions:
+            self.logger.info(
+                "To get information about names of diagrams with exceptions/not_found_eq use --show-exceptions"
+            )
+            self.logger.info(" ")
         for i, data in enumerate(df_list):
             df = data.df
             # Bottom Table
@@ -192,7 +208,12 @@ class Application:
                 self.eq_count += 1
                 df_list.append(DataFrameWithInfo(df, "equipment", file))
             elif "tag_assignments" in str(file):
-                fields = ["sensor_name", "primary_equipment_count", "filename", "equipment_code"]
+                fields = [
+                    "sensor_name",
+                    "primary_equipment_count",
+                    "filename",
+                    "equipment_code",
+                ]
                 df = pd.read_csv(str(file), sep=",", usecols=fields)
                 self.sns_count += 1
                 df_list.append(DataFrameWithInfo(df, "sensor", file))

@@ -102,7 +102,7 @@ class Cli:
             "--show-exceptions",
             help="show/hide files with exceptions or problems",
             action="store_true",
-            default=False
+            default=False,
         )
 
         namespace = parser.parse_args(args)

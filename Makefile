@@ -5,7 +5,6 @@ PRECOMMIT = poetry run pre-commit
 
 FILES_IN = tests/data
 FILES_OUT = tests/data_out
-#TODO add print exceptions t/f
 
 .PHONY: clean fmt lint test init shell run-stack down-stack scrape
 

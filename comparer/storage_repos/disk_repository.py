@@ -9,7 +9,13 @@ logger = get_logger()
 
 
 class DiskRepository(FileRepository):
-    def __init__(self, chosen_files: List[Path], output_dir: Path, skip_hidden: bool = True, debug: bool = False) -> None:
+    def __init__(
+        self,
+        chosen_files: List[Path],
+        output_dir: Path,
+        skip_hidden: bool = True,
+        debug: bool = False,
+    ) -> None:
         super().__init__(chosen_files, output_dir, skip_hidden, debug)
 
     def get_files(self) -> List[Path]:
