@@ -4,6 +4,7 @@ from typing import List
 
 import numpy as np
 import pandas as pd
+import os
 from csv_diff import compare, load_csv
 
 from comparer import get_logger
@@ -33,6 +34,12 @@ class Application:
         return self._visualize(chosen_files, self.debug)
 
     def _visualize(self, chosen_files: List[Path], debug: bool) -> None:
+
+        files = self._assign_paths_visualization(chosen_files)
+        try:
+            pass
+        except:
+            pass
         return None
 
     def _show_difference(self, chosen_files: List[Path], debug: bool) -> None:
@@ -41,7 +48,9 @@ class Application:
         for field in fields(files):
             # print(field.name)
             type_ = getattr(files,field.name)
-            for comp_pre, comp in zip(type_, type_[1:]):
+            if len(type_) > 1:
+                comp_pre = min(type_, key= os.path.getctime)
+                comp = max(type_, key=os.path.getctime)
                 diff = compare(load_csv(open(comp_pre)), load_csv(open(comp)))
                 self.logger.info(f"Saving {field.name}")
                 for key, value in diff.items():
@@ -58,6 +67,10 @@ class Application:
                             continue
                         self.logger.info(f"<--- Saving {key}.csv")
                         fin.to_csv(path)
+            elif len(type_) ==1:
+                self.logger.info("Cannot compare less than 2 files")
+            else:
+                pass
         return None
 
     def _summarize_basic(self, df_list: List[DataFrameWithInfo], debug: bool) -> None:
