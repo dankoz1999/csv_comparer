@@ -29,3 +29,9 @@ class DataFrameWithInfo:
     df: pd.DataFrame
     type: str
     filename: Path
+
+@dataclass
+class ListOfPaths:
+    bottom_table: List[Path]
+    equipment_table: List[Path]
+    sensor_table: List[Path]

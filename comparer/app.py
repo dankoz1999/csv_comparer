@@ -1,3 +1,4 @@
+from dataclasses import fields
 from pathlib import Path
 from typing import List
 
@@ -6,7 +7,10 @@ import pandas as pd
 from csv_diff import compare, load_csv
 
 from comparer import get_logger
-from comparer.templates import DataFrameWithInfo, FileRepository
+from comparer.templates import DataFrameWithInfo, FileRepository, ListOfPaths
+
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
 class Application:
@@ -32,33 +36,28 @@ class Application:
         return None
 
     def _show_difference(self, chosen_files: List[Path], debug: bool) -> None:
-        bt_list: List[Path] = []
-        eq_list: List[Path] = []
-        sns_list: List[Path] = []
 
-        for path in chosen_files:
-            if "bottom_tables" in str(path):
-                bt_list.append(path)
-            elif "equipment" in str(path):
-                eq_list.append(path)
-            elif "tag_assignment" in str(path):
-                sns_list.append(path)
-            else:
-                raise ValueError("Csv file with invalid name!")
-
-        for comp_pre, comp in zip(bt_list, bt_list[1:]):
-            diff = compare(load_csv(open(comp_pre)), load_csv(open(comp)))
-            for key, value in diff.items():
-                if key in ["added", "removed", "changed"]:
-                    path = Path(str(self.file_repo.output_dir) + "/" + f"{key}.csv")
-                    print(key)
-                    for i, row in enumerate(value):
-                        if i == 0:
-                            fin = pd.DataFrame([row])
+        files = self._assign_paths_visualization(chosen_files)
+        for field in fields(files):
+            # print(field.name)
+            type_ = getattr(files,field.name)
+            for comp_pre, comp in zip(type_, type_[1:]):
+                diff = compare(load_csv(open(comp_pre)), load_csv(open(comp)))
+                self.logger.info(f"Saving {field.name}")
+                for key, value in diff.items():
+                    if key in ["added", "removed", "changed"]:
+                        path = Path(str(self.file_repo.output_dir) + "/" + f"{field.name}-{key}.csv")
+                        if len(value) > 0:
+                            for i, row in enumerate(value):
+                                if i == 0:
+                                    fin = pd.DataFrame([row])
+                                else:
+                                    fin = fin.append(row, ignore_index=True)
                         else:
-                            fin = fin.append(row, ignore_index=True)
-                    fin.to_csv(path)
-
+                            self.logger.info(f"{key.capitalize()} table is empty, thus it won't be saved")
+                            continue
+                        self.logger.info(f"<--- Saving {key}.csv")
+                        fin.to_csv(path)
         return None
 
     def _summarize_basic(self, df_list: List[DataFrameWithInfo], debug: bool) -> None:
@@ -254,3 +253,20 @@ class Application:
                     self.logger.info(f"--> {diagram}")
                 self.logger.info(" ")
         return counter
+
+    def _assign_paths_visualization(self, chosen_files: List[Path]) -> ListOfPaths:
+        bt_list: List[Path] = []
+        eq_list: List[Path] = []
+        sns_list: List[Path] = []
+
+        for path in chosen_files:
+            if "bottom_tables" in str(path):
+                bt_list.append(path)
+            elif "equipment" in str(path):
+                eq_list.append(path)
+            elif "tag_assignment" in str(path):
+                sns_list.append(path)
+            else:
+                raise ValueError("Csv file with invalid name!")
+
+        return ListOfPaths(bt_list,eq_list,sns_list)
