@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import List
 import platform
 import webbrowser
-
 import numpy as np
 import pandas as pd
 import os
@@ -12,6 +11,7 @@ from csv_diff import compare, load_csv
 
 from comparer import get_logger
 from comparer.templates import DataFrameWithInfo, FileRepository, ListOfPaths
+from comparer.utils import in_wsl
 
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -53,6 +53,8 @@ class Application:
         if platform.system() == "Darwin":
             path = "file:///" + path
         print(path)
+        test = in_wsl()
+        print(test)
         webbrowser.get().open(path)
 
     def _show_difference(self, chosen_files: List[Path], debug: bool) -> None:

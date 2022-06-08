@@ -1,4 +1,5 @@
 import collections
+from platform import uname
 from pathlib import Path
 from typing import Any, Callable, Iterable, List, TypeVar
 
@@ -24,3 +25,7 @@ def unique(l: Iterable[T], key: Callable[[T], Any]) -> List[T]:
         if key(obj) not in seen:
             seen[key(obj)] = obj
     return list(seen.values())
+
+def in_wsl() -> bool:
+    print(uname().release)
+    return "microsoft-standard" in uname().release
