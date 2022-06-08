@@ -1,6 +1,9 @@
 from dataclasses import fields
+import difflib
 from pathlib import Path
 from typing import List
+import platform
+import webbrowser
 
 import numpy as np
 import pandas as pd
@@ -34,13 +37,24 @@ class Application:
         return self._visualize(chosen_files, self.debug)
 
     def _visualize(self, chosen_files: List[Path], debug: bool) -> None:
-
         files = self._assign_paths_visualization(chosen_files)
-        try:
-            pass
-        except:
-            pass
-        return None
+        fromfile = min(files.bottom_table, key=os.path.getctime)
+        tofile = max(files.bottom_table, key=os.path.getctime)
+        fromlines = open(fromfile, 'U').readlines()
+        tolines = open(tofile, 'U').readlines()
+        abs_path = os.path.abspath(self.file_repo.output_dir)
+        path = str(abs_path) + "/_diff.html"
+
+        diff = difflib.HtmlDiff(wrapcolumn=70).make_file(fromlines,tolines,fromfile,tofile)
+
+        f = open(path,'w')
+        f.write(diff)
+        f.close()
+        if platform.system() == "Darwin":
+            path = "file:///" + path
+
+        webbrowser.get().open(path)
+
 
     def _show_difference(self, chosen_files: List[Path], debug: bool) -> None:
 
