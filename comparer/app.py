@@ -42,8 +42,8 @@ class Application:
         tofile = max(files.bottom_table, key=os.path.getctime)
         fromlines = open(fromfile, 'U').readlines()
         tolines = open(tofile, 'U').readlines()
-        abs_path = os.path.abspath(self.file_repo.output_dir)
-        path = str(abs_path) + "/_diff.html"
+        path = os.path.abspath(self.file_repo.output_dir)
+        path = os.path.join(path, "_diff.html")
 
         diff = difflib.HtmlDiff(wrapcolumn=70).make_file(fromlines,tolines,fromfile,tofile)
 
@@ -52,9 +52,8 @@ class Application:
         f.close()
         if platform.system() == "Darwin":
             path = "file:///" + path
-
+        print(path)
         webbrowser.get().open(path)
-
 
     def _show_difference(self, chosen_files: List[Path], debug: bool) -> None:
 
