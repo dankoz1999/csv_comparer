@@ -20,7 +20,7 @@ class BlobRepository(FileRepository):
     def get_files(self) -> List[Path]:
         res: Set[Path] = set()
         for chosen in self.chosen_files:
-            files = find_file(chosen, "csv$", self.skip_hidden)
+            files = find_file(chosen, "*csv", self.skip_hidden)
             if self.debug:
                 print(f"Found {len(files)} {chosen} files")
             res.update(files)
