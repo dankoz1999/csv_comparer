@@ -11,7 +11,7 @@ from csv_diff import compare, load_csv
 
 from comparer import get_logger
 from comparer.templates import DataFrameWithInfo, FileRepository, ListOfPaths
-from comparer.utils import in_wsl
+from comparer.utils import in_wsl, run_html
 
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -47,14 +47,13 @@ class Application:
 
         diff = difflib.HtmlDiff(wrapcolumn=70).make_file(fromlines,tolines,fromfile,tofile)
 
-        f = open(path,'w')
-        f.write(diff)
-        f.close()
+        with open(path, "w") as f:
+            f.write(diff)
         if platform.system() == "Darwin":
             path = "file:///" + path
-        print(path)
-        test = in_wsl()
-        print(test)
+        # #TODO call Konrad and solve WSL issue
+        # test = in_wsl()
+        # run_html()
         webbrowser.get().open(path)
 
     def _show_difference(self, chosen_files: List[Path], debug: bool) -> None:

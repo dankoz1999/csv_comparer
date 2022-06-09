@@ -2,6 +2,7 @@ import collections
 from platform import uname
 from pathlib import Path
 from typing import Any, Callable, Iterable, List, TypeVar
+import os 
 
 T = TypeVar("T")
 
@@ -27,5 +28,7 @@ def unique(l: Iterable[T], key: Callable[[T], Any]) -> List[T]:
     return list(seen.values())
 
 def in_wsl() -> bool:
-    print(uname().release)
     return "microsoft-standard" in uname().release
+
+def run_html() -> None:
+    os.system(f"python -c 'import webbrowser; webbrowser.open()'")
