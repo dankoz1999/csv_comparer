@@ -4,19 +4,6 @@ stages:
   - lint
   - test
 
-variables:
-  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
-
-cache:
-  key:
-    files:
-      - poetry.lock
-      - .gitlab-ci.yml
-    prefix: ${CI_JOB_NAME}
-  paths:
-    - .venv
-    - .cache/pip
-
 before_script:
   - pip install poetry
   - poetry config virtualenvs.in-project true
