@@ -20,7 +20,7 @@ cache:
 before_script:
   - pip install poetry
   - poetry config virtualenvs.in-project true
-  - poetry install
+  - poetry install --no-interaction --no-root
 
 Run linter:
   stage: lint
