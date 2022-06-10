@@ -8,7 +8,7 @@ stages:
 before_script:
   - pip install poetry
   - poetry config virtualenvs.in-project true
-  - poetry cache:clear --all pypi
+  - poetry cache clear --all pypi --no-interactions
   - poetry install --no-interaction --no-root
 
 Run linter:
