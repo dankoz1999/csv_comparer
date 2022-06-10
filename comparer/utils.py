@@ -31,5 +31,3 @@ def in_wsl() -> bool:
     return "microsoft-standard" in uname().release
 
 
-# def run_html() -> None:
-# os.system(f"python -c 'import webbrowser; webbrowser.open()'")

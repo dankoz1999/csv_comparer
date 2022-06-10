@@ -1,0 +1,40 @@
+image: python:3.9
+
+stages:
+  - lint
+  - test
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  key:
+    files:
+      - poetry.lock
+      - .gitlab-ci.yml
+    prefix: ${CI_JOB_NAME}
+  paths:
+    - .venv
+    - .cache/pip
+
+before_script:
+  - pip install poetry
+  - poetry config virtualenvs.in-project true
+  - poetry install --no-root
+
+Run linter:
+  stage: lint
+  script:
+    - poetry run python -m black --check comparer tests
+    - poetry run python -m autoflake \
+      --check --recursive --remove-all-unused-imports --expand-star-imports \
+      comparer tests
+    - poetry run python -m isort --check-only comparer tests
+    - poetry run python -m mypy comparer tests
+    - poetry run python -m bandit --configfile .bandit.yaml --recursive comparer tests
+
+Run tests:
+  stage: test
+  script:
+    - source .venv/bin/activate
+    - poetry run python -m pytest tests/
