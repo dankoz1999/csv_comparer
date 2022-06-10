@@ -30,6 +30,7 @@ class DataFrameWithInfo:
     type: str
     filename: Path
 
+
 @dataclass
 class ListOfPaths:
     bottom_table: List[Path]

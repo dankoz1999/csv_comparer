@@ -9,7 +9,7 @@ from comparer.utils import find_file
 class BlobRepository(FileRepository):
     def __init__(
         self,
-        chosen_files: List[str],
+        chosen_files: List[Path],
         skip_hidden: bool = True,
         debug: bool = False,
     ) -> None:

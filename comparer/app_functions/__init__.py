@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from logging import Logger
 from pathlib import Path
 from typing import List
+
 import pandas as pd
 
 from comparer.templates import DataFrameWithInfo, ListOfPaths
@@ -13,10 +14,12 @@ class ComparerFunction(ABC):
         self.show_exceptions = show_exceptions
 
     @abstractmethod
-    def run(self, chosen_files: List[Path]) -> None:
+    def run(self, chosen_files: List[Path], output_dir: Path) -> int:
         pass
 
-    def _assign_table(self, chosen_files: List[Path], logger: Logger) -> List[DataFrameWithInfo]:
+    def assign_table(
+        self, chosen_files: List[Path], logger: Logger
+    ) -> List[DataFrameWithInfo]:
 
         df_list: List[DataFrameWithInfo] = []
         self.bt_count = 0
@@ -63,7 +66,7 @@ class ComparerFunction(ABC):
             )
         return df_list
 
-    def _assign_paths_visualization(self, chosen_files: List[Path]) -> ListOfPaths:
+    def assign_paths_visualization(self, chosen_files: List[Path]) -> ListOfPaths:
         bt_list: List[Path] = []
         eq_list: List[Path] = []
         sns_list: List[Path] = []
@@ -78,5 +81,4 @@ class ComparerFunction(ABC):
             else:
                 raise ValueError("Csv file with invalid name!")
 
-        return ListOfPaths(bt_list,eq_list,sns_list)
-        
+        return ListOfPaths(bt_list, eq_list, sns_list)

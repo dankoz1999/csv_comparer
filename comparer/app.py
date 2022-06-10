@@ -1,15 +1,14 @@
+import warnings
 from pathlib import Path
 from typing import List
 
-
 from comparer import get_logger
-from comparer.templates import FileRepository
 from comparer.app_functions.basic_statistics import BasicStatistics
 from comparer.app_functions.show_difference import ShowDifference
 from comparer.app_functions.visualize import Visualize
+from comparer.templates import FileRepository
 
-import warnings
-warnings.simplefilter(action='ignore', category=FutureWarning)
+warnings.simplefilter(action="ignore", category=FutureWarning)
 
 
 class Application:
@@ -21,16 +20,14 @@ class Application:
         self.debug = debug
         self.logger = get_logger()
 
-    def basic_statistics(self, chosen_files: List[Path]) -> None:
-        bs = BasicStatistics(self.debug, self.show_exceptions)
-        return bs.run(chosen_files, self.logger)
+    def basic_statistics(self, chosen_files: List[Path]) -> int:
+        bs = BasicStatistics(self.debug, self.show_exceptions, self.logger)
+        return bs.run(chosen_files, self.file_repo.output_dir)
 
-    def show_difference(self, chosen_files: List[Path]) -> None:
-        sd = ShowDifference(self.debug, self.show_exceptions)
-        return sd.run(chosen_files, self.logger, self.file_repo.output_dir)
+    def show_difference(self, chosen_files: List[Path]) -> int:
+        sd = ShowDifference(self.debug, self.show_exceptions, self.logger)
+        return sd.run(chosen_files, self.file_repo.output_dir)
 
-    def visualize(self, chosen_files: List[Path]) -> None:
+    def visualize(self, chosen_files: List[Path]) -> int:
         vi = Visualize(self.debug, self.show_exceptions)
         return vi.run(chosen_files, self.file_repo.output_dir)
-
-
