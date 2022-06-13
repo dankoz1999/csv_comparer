@@ -29,7 +29,8 @@ Run linter:
   script:
     - poetry run python -m black --check comparer tests
     - poetry run python -m autoflake \
-      --check --recursive --remove-all-unused-imports --expand-star-imports comparer
+      --check --recursive --remove-all-unused-imports --expand-star-imports \
+      comparer tests
     - poetry run python -m isort --check-only comparer tests
     - poetry run python -m mypy comparer tests
     - poetry run python -m bandit --configfile .bandit.yaml --recursive comparer tests
