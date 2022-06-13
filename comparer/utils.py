@@ -29,5 +29,3 @@ def unique(l: Iterable[T], key: Callable[[T], Any]) -> List[T]:
 
 def in_wsl() -> bool:
     return "microsoft-standard" in uname().release
-
-
