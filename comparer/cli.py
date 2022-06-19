@@ -29,6 +29,10 @@ class Cli:
         app = new_application(
             chosen_files=parsed_args.chosen_files,
             output_dir=Path(*parsed_args.output_dir),
+            filename_type=parsed_args.filename_type,
+            aliases=parsed_args.aliases,
+            columns=parsed_args.columns,
+            exception_style=parsed_args.exception_style,
             skip_hidden=parsed_args.skip_hidden,
             show_exceptions=parsed_args.show_exceptions,
             debug=parsed_args.debug,
@@ -103,6 +107,37 @@ class Cli:
             help="show/hide files with exceptions or problems",
             action="store_true",
             default=False,
+        )
+
+        parser.add_argument(
+            "--filename-type",
+            type=str,
+            nargs="+",
+            help="enter the names of filenames which should be compared (files need to have the same unique part)",
+            required=True,
+        )
+
+        parser.add_argument(
+            "--aliases",
+            type=str,
+            nargs="+",
+            help="enter the aliases if you want to have different names than the files",
+        )
+
+        parser.add_argument(
+            "--columns",
+            type=str,
+            nargs="+",
+            help="specify column names for each set of files",
+            action="append",
+            default=[],
+        )
+
+        parser.add_argument(
+            "--exception-style",
+            type=str,
+            help="enter custom exception style ('Exception' by default)",
+            default="Exception",
         )
 
         namespace = parser.parse_args(args)

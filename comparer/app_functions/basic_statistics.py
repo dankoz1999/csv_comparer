@@ -1,17 +1,19 @@
 from logging import Logger
 from pathlib import Path
-from typing import List
+from typing import Dict, List
 
 import numpy as np
 import pandas as pd
 
 from comparer.app_functions import ComparerFunction
-from comparer.templates import DataFrameWithInfo
+from comparer.templates import Config, DataFrameWithInfo
 
 
 class BasicStatistics(ComparerFunction):
-    def __init__(self, debug: bool, show_exceptions: bool, logger: Logger) -> None:
-        super().__init__(debug, show_exceptions)
+    def __init__(
+        self, debug: bool, show_exceptions: bool, config: Config, logger: Logger
+    ) -> None:
+        super().__init__(debug, show_exceptions, config)
         self.logger = logger
 
     def run(self, chosen_files: List[Path], output_dir: Path) -> int:
@@ -19,130 +21,141 @@ class BasicStatistics(ComparerFunction):
         return self._summarize_basic(df_list, self.debug)
 
     def _summarize_basic(self, df_list: List[DataFrameWithInfo], debug: bool) -> int:
-        first_bt = True
-        first_eq = True
-        first_sns = True
+        bool_values: Dict[str, bool] = {}
+        for key in self.counter.keys():
+            bool_values[key] = True
         if not self.show_exceptions:
             self.logger.info(
-                "To get information about names of diagrams with exceptions/not_found_eq use --show-exceptions"
+                "To get more informations columns with exceptions use --show-exceptions"
             )
             self.logger.info(" ")
         for i, data in enumerate(df_list):
             df = data.df
+            if len(self.config.aliases) > 0:
+                data.type = self.config.aliases[data.index]
+            if bool_values[data.type]:
+                self.logger.info(" ")
+                self.logger.info(
+                    f"-------------{data.type.capitalize()} Statistics-------------"
+                )
+                self.logger.info(" ")
+                bool_values[data.type] = False
+            if self.counter[data.type] > 1:
+                self.logger.info(
+                    f"Statistics for file nr {i+1} - {str(data.filename.stem)}"
+                )
             # Bottom Table
-            if data.type == "bottom":
-                if first_bt:
-                    self.logger.info(" ")
-                    self.logger.info(
-                        "-------------Bottom Table Statistics-------------"
-                    )
-                    self.logger.info(" ")
-                    first_bt = False
-                if self.bt_count > 1:
-                    self.logger.info(
-                        f"Statistics for file nr {i+1} - {str(data.filename.stem)}"
-                    )
+            if data.type == self.config.filename_type[0]:
                 number_fill = 0
                 for column, column1 in zip(
-                    df["major_equipment"].notna(), df["major_equipment_parsed"].isna()
+                    df[self.config.columns[data.index][4]].notna(),
+                    df[self.config.columns[data.index][5]].isna(),
                 ):
                     if column and column1:
                         number_fill += 1
                 self.logger.info(
-                    f"Found {number_fill} cells where Major Equipment is filled and Major Equipment Parse isn't"
+                    f"Found {number_fill} cells where {self.config.columns[data.index][4]} is filled and {self.config.columns[data.index][5]} isn't"
                 )
                 number_dex = df.loc[
-                    df["drawing_description"] == "Exception", "drawing_description"
+                    df[self.config.columns[data.index][3]]
+                    == self.config.exception_style,
+                    self.config.columns[data.index][3],
                 ].count()
                 number_nex = df.loc[
-                    df["drawing_number"] == "Exception", "drawing_number"
+                    df[self.config.columns[data.index][1]]
+                    == self.config.exception_style,
+                    self.config.columns[data.index][1],
                 ].count()
                 number_tit = df.loc[
-                    df["drawing_title_name"] == "Exception", "drawing_title_name"
+                    df[self.config.columns[data.index][2]]
+                    == self.config.exception_style,
+                    self.config.columns[data.index][2],
                 ].count()
                 self.logger.info(
-                    (f"Found {number_dex} exceptions in Drawing Description")
+                    (
+                        f"Found {number_dex} exceptions in {self.config.columns[data.index][3]}"
+                    )
                 )
-                self.logger.info((f"Found {number_nex} exceptions in Drawing Number"))
                 self.logger.info(
-                    (f"Found {number_tit} exceptions in Drawing Title Name")
+                    (
+                        f"Found {number_nex} exceptions in {self.config.columns[data.index][1]}"
+                    )
+                )
+                self.logger.info(
+                    (
+                        f"Found {number_tit} exceptions in {self.config.columns[data.index][2]}"
+                    )
                 )
                 self.logger.info(" ")
-            elif data.type == "equipment":
-                if first_eq:
-                    self.logger.info(" ")
-                    self.logger.info("-------------Equipment Statistics-------------")
-                    self.logger.info(" ")
-                    first_eq = False
-                if self.eq_count > 1:
-                    self.logger.info(
-                        f"Statistics for file nr {i+1 - self.bt_count} - {str(data.filename.stem)}"
-                    )
-                self.logger.info(f"Found {df.shape[0]} equipments")
-                for item in ["primary-full", "primary-partial", "flow-table", "other"]:
+            # Equipment
+            elif data.type == self.config.filename_type[1]:
+                self.logger.info(f"Found {df.shape[0]} {data.type}")
+                for item in sorted(df[self.config.columns[data.index][3]].unique()):
                     value = df.loc[
-                        df["scraped_equipment_type"] == item, "scraped_equipment_type"
+                        df[self.config.columns[data.index][3]] == item,
+                        self.config.columns[data.index][3],
                     ].count()
-                    self.logger.info(f"Found {value} {item} equipment")
-                to_long_desc = df.loc[
-                    df["service_description"].str.len() > 50, "service_description"
+                    self.logger.info(f"Found {value} {item} {data.type}")
+                to_long_ = df.loc[
+                    df[self.config.columns[data.index][0]].str.len() > 50,
+                    self.config.columns[data.index][0],
                 ].count()
-                to_short_desc = df.loc[
-                    df["service_description"].str.len() < 3, "service_description"
+                to_short_ = df.loc[
+                    df[self.config.columns[data.index][0]].str.len() < 3,
+                    self.config.columns[data.index][0],
                 ].count()
                 self.logger.info(
-                    f"Found {to_long_desc} equipment with description longer than 50"
+                    f"Found {to_long_} {data.type} with {self.config.columns[data.index][0]} longer than 50"
                 )
                 self.logger.info(
-                    f"Found {to_short_desc} equipment with description shorther than 3"
+                    f"Found {to_short_} {data.type} with {self.config.columns[data.index][0]} shorther than 3"
                 )
                 self.logger.info(" ")
-            elif data.type == "sensor":
-                if first_sns:
-                    self.logger.info(" ")
-                    self.logger.info("-------------Sensors Statistics-------------")
-                    self.logger.info(" ")
-                    first_sns = False
-                if self.sns_count > 1:
-                    self.logger.info(
-                        f"Statistics for file nr {i+1 - self.bt_count - self.eq_count} - {str(data.filename.stem)}"
-                    )
-                df_number = self._sensors_preprocessing(df, debug)
-                len_fil = len(df["filename"].unique())
-                sns_number = df.shape[0] / df_number
-                self.logger.info(f"Found {int(sns_number)} sensors")
+            # sensors
+            elif data.type == self.config.filename_type[2]:
+                df_number = self._preprocessing(df, debug, data)
+                len_fil = len(df[self.config.columns[2][2]].unique())
+                number = df.shape[0] / df_number
+                self.logger.info(f"Found {int(number)} {data.type}")
                 self.logger.info(
-                    f"Average number of sensors per diagram: {int(sns_number/len_fil)} "
+                    f"Average number of {data.type} per file: {int(number/len_fil)} "
                 )
-                to_long_sns = df.loc[
-                    df["sensor_name"].str.len() > 15, "sensor_name"
+                to_long = df.loc[
+                    df[self.config.columns[data.index][0]].str.len() > 15,
+                    self.config.columns[data.index][0],
                 ].count()
-                to_short_sns = df.loc[
-                    df["sensor_name"].str.len() < 3, "sensor_name"
+                to_short = df.loc[
+                    df[self.config.columns[data.index][0]].str.len() < 3,
+                    self.config.columns[data.index][0],
                 ].count()
                 to_many_letters = df.loc[
-                    df["sensor_name"].str.count("[A-Z]") > 9, "sensor_name"
+                    df[self.config.columns[data.index][0]].str.count("[A-Z]") > 9,
+                    self.config.columns[data.index][0],
                 ].count()
                 self.logger.info(
-                    f"Found {to_long_sns} sensors with name longer than 15"
+                    f"Found {to_long} {data.type} with name longer than 15"
                 )
                 self.logger.info(
-                    f"Found {to_short_sns} sensors with name shorter than 3"
+                    f"Found {to_short} {data.type} with name shorter than 3"
                 )
                 self.logger.info(
-                    f"Found {to_many_letters} sensors with more than 9 letters"
+                    f"Found {to_many_letters} {data.type} with more than 9 letters"
                 )
                 self.logger.info(" ")
         return 0
 
-    def _sensors_preprocessing(self, df: pd.DataFrame, debug: bool) -> int:
+    def _preprocessing(
+        self, df: pd.DataFrame, debug: bool, data: DataFrameWithInfo
+    ) -> int:
 
-        filenames = df["filename"].unique()
-        occurances = df["filename"].value_counts()
-        value_counts = df.groupby("filename")["primary_equipment_count"].max()
+        filenames = df[self.config.columns[data.index][2]].unique()
+        occurances = df[self.config.columns[data.index][2]].value_counts()
+        value_counts = df.groupby(self.config.columns[data.index][2])[
+            self.config.columns[data.index][1]
+        ].max()
         value_counts = value_counts[np.logical_not(np.isnan(value_counts))]
         counter = 0
-        bad_diagrams: List[str] = []
+        bad_files: List[str] = []
         for f in filenames:
             f_occurances = occurances[f]
             try:
@@ -152,15 +165,17 @@ class BasicStatistics(ComparerFunction):
             counter = f_occurances / value_count
             if counter != int(counter):
                 if debug:
-                    self.logger.debug(f"There are not found eq in {f}")
-                bad_diagrams.append(f)
-        if len(bad_diagrams) > 0:
-            self.logger.info(f"There is not found eq in {len(bad_diagrams)} diagrams")
-            self.logger.info("Fix them, if you want to have exact number of sensors!")
+                    self.logger.debug(f"There is a problem in {f}")
+                bad_files.append(f)
+        if len(bad_files) > 0:
+            self.logger.info(f"There is a problem in {len(bad_files)} files")
+            self.logger.info(
+                f"Fix them, if you want to have exact number of {data.type}!"
+            )
             if self.show_exceptions:
                 self.logger.info(" ")
-                self.logger.info("List of bad diagrams: ")
-                for diagram in bad_diagrams:
-                    self.logger.info(f"--> {diagram}")
+                self.logger.info("List of bad files: ")
+                for file in bad_files:
+                    self.logger.info(f"--> {file}")
                 self.logger.info(" ")
         return counter

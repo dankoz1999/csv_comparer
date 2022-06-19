@@ -6,19 +6,20 @@ from pathlib import Path
 from typing import List
 
 from comparer.app_functions import ComparerFunction
+from comparer.templates import Config
 
 
 class Visualize(ComparerFunction):
-    def __init__(self, debug: bool, show_exceptions: bool) -> None:
-        super().__init__(debug, show_exceptions)
+    def __init__(self, debug: bool, show_exceptions: bool, config: Config) -> None:
+        super().__init__(debug, show_exceptions, config)
 
     def run(self, chosen_files: List[Path], output_dir: Path) -> int:
         return self._visualize(chosen_files, output_dir)
 
     def _visualize(self, chosen_files: List[Path], output_dir: Path) -> int:
         files = self.assign_paths_visualization(chosen_files)
-        fromfile = str(min(files.bottom_table, key=os.path.getctime))
-        tofile = str(max(files.bottom_table, key=os.path.getctime))
+        fromfile = str(min(files["bottom_table"], key=os.path.getctime))
+        tofile = str(max(files["bottom_table"], key=os.path.getctime))
         fromlines = open(fromfile, "U").readlines()
         tolines = open(tofile, "U").readlines()
         path = os.path.abspath(output_dir)
@@ -32,8 +33,5 @@ class Visualize(ComparerFunction):
             f.write(diff)
         if platform.system() == "Darwin":
             path = "file:///" + path
-        # #TODO call Konrad and solve WSL issue
-        # test = in_wsl()
-        # run_html()
         webbrowser.get().open(path)
         return 0

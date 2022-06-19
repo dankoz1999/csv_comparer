@@ -3,12 +3,16 @@ from typing import List
 
 from comparer.app import Application
 from comparer.storage_repos.disk_repository import DiskRepository
-from comparer.templates import FileRepository
+from comparer.templates import Config, FileRepository
 
 
 def new_application(
     chosen_files: List[str],
     output_dir: Path,
+    filename_type: str,
+    aliases: str,
+    columns: List[List[str]],
+    exception_style: str,
     skip_hidden: bool = True,
     show_exceptions: bool = False,
     debug: bool = True,
@@ -21,8 +25,13 @@ def new_application(
         debug=debug,
     )
 
+    config = Config(filename_type, columns, exception_style, aliases)
+
+    if len(config.aliases) != len(config.filename_type):
+        raise ValueError("Every filename needs to have an alias!")
+
     return Application(
-        file_repo=file_repo, show_exceptions=show_exceptions, debug=debug
+        file_repo=file_repo, config=config, show_exceptions=show_exceptions, debug=debug
     )
 
 

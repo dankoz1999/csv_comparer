@@ -8,11 +8,14 @@ import pandas as pd
 from csv_diff import compare, load_csv
 
 from comparer.app_functions import ComparerFunction
+from comparer.templates import Config
 
 
 class ShowDifference(ComparerFunction):
-    def __init__(self, debug: bool, show_exceptions: bool, logger: Logger) -> None:
-        super().__init__(debug, show_exceptions)
+    def __init__(
+        self, debug: bool, show_exceptions: bool, config: Config, logger: Logger
+    ) -> None:
+        super().__init__(debug, show_exceptions, config)
         self.logger = logger
 
     def run(self, chosen_files: List[Path], output_dir: Path) -> int:
