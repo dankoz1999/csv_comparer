@@ -1,5 +1,4 @@
 import os
-from dataclasses import fields
 from logging import Logger
 from pathlib import Path
 from typing import List
@@ -24,17 +23,16 @@ class ShowDifference(ComparerFunction):
     def _show_difference(self, chosen_files: List[Path], output_dir: Path) -> int:
 
         files = self.assign_paths_visualization(chosen_files)
-        for field in fields(files):
+        for field_key, field in files.items():
             # print(field.name)
-            type_ = getattr(files, field.name)
-            if len(type_) > 1:
-                comp_pre = min(type_, key=os.path.getctime)
-                comp = max(type_, key=os.path.getctime)
+            if len(field) > 1:
+                comp_pre = min(field, key=os.path.getctime)
+                comp = max(field, key=os.path.getctime)
                 diff = compare(load_csv(open(comp_pre)), load_csv(open(comp)))
-                self.logger.info(f"Saving {field.name}")
+                self.logger.info(f"Saving {field_key}")
                 for key, value in diff.items():
                     if key in ["added", "removed", "changed"]:
-                        path = Path(str(output_dir) + "/" + f"{field.name}-{key}.csv")
+                        path = Path(str(output_dir) + "/" + f"{field_key}-{key}.csv")
                         if len(value) > 0:
                             for i, row in enumerate(value):
                                 if i == 0:
@@ -48,7 +46,7 @@ class ShowDifference(ComparerFunction):
                             continue
                         self.logger.info(f"<--- Saving {key}.csv")
                         fin.to_csv(path)
-            elif len(type_) == 1:
+            elif len(field) == 1:
                 self.logger.info("Cannot compare less than 2 files")
             else:
                 pass

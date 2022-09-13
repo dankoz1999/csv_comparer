@@ -70,11 +70,13 @@ class ComparerFunction(ABC):
         for n in self.config.filename_type:
             dict_list[n] = []
 
+        found_flag = False
         for path in chosen_files:
             for name in self.config.filename_type:
                 if name in str(path):
                     dict_list[name].append(path)
-                else:
-                    raise ValueError("Csv file with invalid name!")
+                    found_flag = True
+            if not found_flag:
+                raise ValueError("Csv file with invalid name!")
 
         return dict_list
