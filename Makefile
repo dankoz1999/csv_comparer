@@ -10,6 +10,8 @@ ALIASES = bottom_tables equipment sensors
 COLUMNS_BT = filename drawing_number drawing_title_name drawing_description major_equipment major_equipment_parsed
 COLUMNS_EQ = service_description yard_no equipment_code scraped_equipment_type
 COLUMNS_SNS = sensor_name primary_equipment_count filename equipment_code
+EXCEPTION_COLUMNS = drawing_number drawing_title_name drawing_description
+TO_COUNT = service_description gt 50 service_description lt 3
 
 .PHONY: clean fmt lint test init shell run-stack down-stack scrape
 
@@ -18,7 +20,7 @@ define run_comparer
 		${PYTHON} -m ${MODULE} --mode $(1) \
 		--chosen-files ${FILES_IN} --output-dir ${FILES_OUT} \
 		--filename-type ${FILENAME_TYPE} --aliases ${ALIASES} --columns ${COLUMNS_BT} \
-		--columns ${COLUMNS_EQ} --columns ${COLUMNS_SNS}
+		--columns ${COLUMNS_EQ} --columns ${COLUMNS_SNS} --exception-columns ${EXCEPTION_COLUMNS} --to-count ${TO_COUNT}
 endef
 
 .git/hooks/pre-commit:

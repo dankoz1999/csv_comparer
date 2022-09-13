@@ -27,6 +27,8 @@ class FileRepository(ABC):
 @dataclass
 class DataFrameWithInfo:
     df: pd.DataFrame
+    exception_columns: List[str]
+    to_count: List[str]
     type: str
     filename: Path
     index: int
@@ -41,7 +43,9 @@ class ListOfPaths:
 
 @dataclass
 class Config:
-    filename_type: str
+    filename_type: List[str]
     columns: List[List[str]]
     exception_style: str
-    aliases: str
+    exception_columns: List[str]
+    to_count: List[str]
+    aliases: List[str]

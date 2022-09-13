@@ -32,7 +32,31 @@ class ComparerFunction(ABC):
                     df = pd.read_csv(str(file), sep=",", usecols=self.config.columns[i])
                     self.counter[file_t] = self.counter[file_t] + 1
                     index = self.config.filename_type.index(file_t)
-                    df_list.append(DataFrameWithInfo(df, file_t, file, index))
+                    exception_columns = (
+                        self.config.exception_columns
+                        if any(
+                            [
+                                elem in self.config.columns[i]
+                                for elem in self.config.exception_columns
+                            ]
+                        )
+                        else []
+                    )
+                    to_count = (
+                        self.config.to_count
+                        if any(
+                            [
+                                element[0] in self.config.columns[i]
+                                for element in self.config.to_count
+                            ]
+                        )
+                        else []
+                    )
+                    df_list.append(
+                        DataFrameWithInfo(
+                            df, exception_columns, to_count, file_t, file, index
+                        )
+                    )
         if self.debug:
             for key, value in self.counter.items():
                 logger.info(f"Found {value} {key}")

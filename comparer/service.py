@@ -9,10 +9,12 @@ from comparer.templates import Config, FileRepository
 def new_application(
     chosen_files: List[str],
     output_dir: Path,
-    filename_type: str,
-    aliases: str,
+    filename_type: List[str],
+    aliases: List[str],
     columns: List[List[str]],
     exception_style: str,
+    exception_columns: List[str],
+    to_count: str,
     skip_hidden: bool = True,
     show_exceptions: bool = False,
     debug: bool = True,
@@ -24,8 +26,16 @@ def new_application(
         skip_hidden=skip_hidden,
         debug=debug,
     )
+    to_count_fin = [to_count[x : x + 3] for x in range(0, len(to_count), 3)]
 
-    config = Config(filename_type, columns, exception_style, aliases)
+    config = Config(
+        filename_type,
+        columns,
+        exception_style,
+        exception_columns,
+        to_count_fin,
+        aliases,
+    )
 
     if len(config.aliases) != len(config.filename_type):
         raise ValueError("Every filename needs to have an alias!")

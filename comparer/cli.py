@@ -33,6 +33,8 @@ class Cli:
             aliases=parsed_args.aliases,
             columns=parsed_args.columns,
             exception_style=parsed_args.exception_style,
+            exception_columns=parsed_args.exception_columns,
+            to_count=parsed_args.to_count,
             skip_hidden=parsed_args.skip_hidden,
             show_exceptions=parsed_args.show_exceptions,
             debug=parsed_args.debug,
@@ -138,6 +140,20 @@ class Cli:
             type=str,
             help="enter custom exception style ('Exception' by default)",
             default="Exception",
+        )
+
+        parser.add_argument(
+            "--exception-columns",
+            type=str,
+            nargs="+",
+            help="specify column names for each set of files",
+        )
+
+        parser.add_argument(
+            "--to-count",
+            type=str,
+            nargs="+",
+            help="specify columns which are supposed to be counted and add max or min value (for example if you want to calculate col. 'abc' >/< 10 signs use abc gt/lt 10) ",
         )
 
         namespace = parser.parse_args(args)

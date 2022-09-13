@@ -45,72 +45,44 @@ class BasicStatistics(ComparerFunction):
                     f"Statistics for file nr {i+1} - {str(data.filename.stem)}"
                 )
             # Bottom Table
-            if data.type == self.config.filename_type[0]:
-                number_fill = 0
-                for column, column1 in zip(
-                    df[self.config.columns[data.index][4]].notna(),
-                    df[self.config.columns[data.index][5]].isna(),
-                ):
-                    if column and column1:
-                        number_fill += 1
-                self.logger.info(
-                    f"Found {number_fill} cells where {self.config.columns[data.index][4]} is filled and {self.config.columns[data.index][5]} isn't"
-                )
-                number_dex = df.loc[
-                    df[self.config.columns[data.index][3]]
-                    == self.config.exception_style,
-                    self.config.columns[data.index][3],
-                ].count()
-                number_nex = df.loc[
-                    df[self.config.columns[data.index][1]]
-                    == self.config.exception_style,
-                    self.config.columns[data.index][1],
-                ].count()
-                number_tit = df.loc[
-                    df[self.config.columns[data.index][2]]
-                    == self.config.exception_style,
-                    self.config.columns[data.index][2],
-                ].count()
-                self.logger.info(
-                    (
-                        f"Found {number_dex} exceptions in {self.config.columns[data.index][3]}"
-                    )
-                )
-                self.logger.info(
-                    (
-                        f"Found {number_nex} exceptions in {self.config.columns[data.index][1]}"
-                    )
-                )
-                self.logger.info(
-                    (
-                        f"Found {number_tit} exceptions in {self.config.columns[data.index][2]}"
-                    )
-                )
+            if (
+                data.type == self.config.filename_type[0]
+                or data.type == self.config.filename_type[1]
+            ):
+                self.logger.info(f"Found {df.shape[0]} {data.type}")
+                for exception in data.exception_columns:
+                    number = df.loc[
+                        df[exception] == self.config.exception_style, exception
+                    ].count()
+                    self.logger.info(f"Found {number} exceptions in {exception}")
+                for ct in data.to_count:
+                    if ct[1] == "gt":
+                        counted_value = df.loc[
+                            df[ct[0]].str.len() > int(ct[2]), ct[0]
+                        ].count()
+                        self.logger.info(
+                            f"Found {counted_value} {data.type} with {ct[0]} longer than {ct[2]}"
+                        )
+                    elif ct[1] == "lt":
+                        counted_value = df.loc[
+                            df[ct[0]].str.len() < int(ct[2]), ct[0]
+                        ].count()
+                        self.logger.info(
+                            f"Found {counted_value} {data.type} with {ct[0]} shorther than {ct[2]}"
+                        )
+                    else:
+                        raise ValueError(
+                            "Invalid comparison sign -> use gt for > or lt for <"
+                        )
                 self.logger.info(" ")
             # Equipment
             elif data.type == self.config.filename_type[1]:
-                self.logger.info(f"Found {df.shape[0]} {data.type}")
                 for item in sorted(df[self.config.columns[data.index][3]].unique()):
                     value = df.loc[
                         df[self.config.columns[data.index][3]] == item,
                         self.config.columns[data.index][3],
                     ].count()
                     self.logger.info(f"Found {value} {item} {data.type}")
-                to_long_ = df.loc[
-                    df[self.config.columns[data.index][0]].str.len() > 50,
-                    self.config.columns[data.index][0],
-                ].count()
-                to_short_ = df.loc[
-                    df[self.config.columns[data.index][0]].str.len() < 3,
-                    self.config.columns[data.index][0],
-                ].count()
-                self.logger.info(
-                    f"Found {to_long_} {data.type} with {self.config.columns[data.index][0]} longer than 50"
-                )
-                self.logger.info(
-                    f"Found {to_short_} {data.type} with {self.config.columns[data.index][0]} shorther than 3"
-                )
-                self.logger.info(" ")
             # sensors
             elif data.type == self.config.filename_type[2]:
                 df_number = self._preprocessing(df, debug, data)
