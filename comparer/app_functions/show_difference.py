@@ -24,11 +24,21 @@ class ShowDifference(ComparerFunction):
 
         files = self.assign_paths_visualization(chosen_files)
         for field_key, field in files.items():
-            # print(field.name)
             if len(field) > 1:
                 comp_pre = min(field, key=os.path.getctime)
                 comp = max(field, key=os.path.getctime)
-                diff = compare(load_csv(open(comp_pre)), load_csv(open(comp)))
+                if self.config.show_difference_key is not None:
+                    diff = compare(
+                        load_csv(open(comp_pre), key=self.config.show_difference_key),
+                        load_csv(open(comp), key=self.config.show_difference_key),
+                    )
+                else:
+                    file_pre = pd.read_csv(str(comp_pre), on_bad_lines="skip")
+                    key_pre = file_pre.columns.values[0]
+                    diff = compare(
+                        load_csv(open(comp_pre), key=key_pre),
+                        load_csv(open(comp), key=key_pre),
+                    )
                 self.logger.info(f"Saving {field_key}")
                 for key, value in diff.items():
                     if key in ["added", "removed", "changed"]:

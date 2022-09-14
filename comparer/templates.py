@@ -49,3 +49,4 @@ class Config:
     exception_columns: List[str]
     to_count: List[str]
     aliases: List[str]
+    show_difference_key: str

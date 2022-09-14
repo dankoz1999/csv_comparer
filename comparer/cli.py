@@ -35,6 +35,7 @@ class Cli:
             exception_style=parsed_args.exception_style,
             exception_columns=parsed_args.exception_columns,
             to_count=parsed_args.to_count,
+            show_difference_key=parsed_args.show_diff_key,
             skip_hidden=parsed_args.skip_hidden,
             show_exceptions=parsed_args.show_exceptions,
             debug=parsed_args.debug,
@@ -154,6 +155,13 @@ class Cli:
             type=str,
             nargs="+",
             help="specify columns which are supposed to be counted and add max or min value (for example if you want to calculate col. 'abc' >/< 10 signs use abc gt/lt 10) ",
+        )
+
+        parser.add_argument(
+            "--show-diff-key",
+            type=str,
+            help="specify unique key (column name). If not the first name will be set as the key",
+            default=None,
         )
 
         namespace = parser.parse_args(args)

@@ -15,6 +15,7 @@ def new_application(
     exception_style: str,
     exception_columns: List[str],
     to_count: str,
+    show_difference_key: str,
     skip_hidden: bool = True,
     show_exceptions: bool = False,
     debug: bool = True,
@@ -35,6 +36,7 @@ def new_application(
         exception_columns,
         to_count_fin,
         aliases,
+        show_difference_key,
     )
 
     if len(config.aliases) != len(config.filename_type):

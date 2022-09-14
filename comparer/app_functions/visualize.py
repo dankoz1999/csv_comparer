@@ -18,8 +18,9 @@ class Visualize(ComparerFunction):
 
     def _visualize(self, chosen_files: List[Path], output_dir: Path) -> int:
         files = self.assign_paths_visualization(chosen_files)
-        fromfile = str(min(files["bottom_table"], key=os.path.getctime))
-        tofile = str(max(files["bottom_table"], key=os.path.getctime))
+        # TODO add an ability to iterate thru every file
+        fromfile = str(min(files["bottom_tables"], key=os.path.getctime))
+        tofile = str(max(files["bottom_tables"], key=os.path.getctime))
         fromlines = open(fromfile, "U").readlines()
         tolines = open(tofile, "U").readlines()
         path = os.path.abspath(output_dir)
