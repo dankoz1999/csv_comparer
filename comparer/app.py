@@ -34,5 +34,5 @@ class Application:
         return sd.run(chosen_files, self.file_repo.output_dir)
 
     def visualize(self, chosen_files: List[Path]) -> int:
-        vi = Visualize(self.debug, self.show_exceptions, self.config)
+        vi = Visualize(self.debug, self.show_exceptions, self.config, self.logger)
         return vi.run(chosen_files, self.file_repo.output_dir)

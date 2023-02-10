@@ -13,11 +13,13 @@ class BasicStatistics(ComparerFunction):
     def __init__(
         self, debug: bool, show_exceptions: bool, config: Config, logger: Logger
     ) -> None:
-        super().__init__(debug, show_exceptions, config)
-        self.logger = logger
+        super().__init__(debug, show_exceptions, config, logger)
 
     def run(self, chosen_files: List[Path], output_dir: Path) -> int:
         df_list = self.assign_table(chosen_files, self.logger)
+        if len(df_list) == 0:
+            self.logger.warning("No tables assigned!")
+            return 0
         return self._summarize_basic(df_list, self.debug)
 
     def _summarize_basic(self, df_list: List[DataFrameWithInfo], debug: bool) -> int:

@@ -2,6 +2,7 @@ import difflib
 import os
 import platform
 import webbrowser
+from logging import Logger
 from pathlib import Path
 from typing import List
 
@@ -10,8 +11,10 @@ from comparer.templates import Config
 
 
 class Visualize(ComparerFunction):
-    def __init__(self, debug: bool, show_exceptions: bool, config: Config) -> None:
-        super().__init__(debug, show_exceptions, config)
+    def __init__(
+        self, debug: bool, show_exceptions: bool, config: Config, logger: Logger
+    ) -> None:
+        super().__init__(debug, show_exceptions, config, logger)
 
     def run(self, chosen_files: List[Path], output_dir: Path) -> int:
         return self._visualize(chosen_files, output_dir)

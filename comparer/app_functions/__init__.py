@@ -9,10 +9,13 @@ from comparer.templates import Config, DataFrameWithInfo
 
 
 class ComparerFunction(ABC):
-    def __init__(self, debug: bool, show_exceptions: bool, config: Config) -> None:
+    def __init__(
+        self, debug: bool, show_exceptions: bool, config: Config, logger: Logger
+    ) -> None:
         self.debug = debug
         self.show_exceptions = show_exceptions
         self.config = config
+        self.logger = logger
 
     @abstractmethod
     def run(self, chosen_files: List[Path], output_dir: Path) -> int:
@@ -29,7 +32,15 @@ class ComparerFunction(ABC):
         for file in sorted(chosen_files):
             for i, file_t in enumerate(self.config.filename_type):
                 if file_t in str(file):
-                    df = pd.read_csv(str(file), sep=",", usecols=self.config.columns[i])
+                    try:
+                        df = pd.read_csv(
+                            str(file), sep=",", usecols=self.config.columns[i]
+                        )
+                    except:
+                        self.logger.warning(
+                            "To many colmuns where specified - take a look at your csv file"
+                        )
+                        return []
                     self.counter[file_t] = self.counter[file_t] + 1
                     index = self.config.filename_type.index(file_t)
                     exception_columns = (

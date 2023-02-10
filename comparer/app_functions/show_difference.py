@@ -14,8 +14,7 @@ class ShowDifference(ComparerFunction):
     def __init__(
         self, debug: bool, show_exceptions: bool, config: Config, logger: Logger
     ) -> None:
-        super().__init__(debug, show_exceptions, config)
-        self.logger = logger
+        super().__init__(debug, show_exceptions, config, logger)
 
     def run(self, chosen_files: List[Path], output_dir: Path) -> int:
         return self._show_difference(chosen_files, output_dir)
