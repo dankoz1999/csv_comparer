@@ -46,7 +46,7 @@ class BasicStatistics(ComparerFunction):
                 self.logger.info(
                     f"Statistics for file nr {i+1} - {str(data.filename.stem)}"
                 )
-            # Bottom Table
+            # BT
             if (
                 data.type == self.config.filename_type[0]
                 or data.type == self.config.filename_type[1]
@@ -77,7 +77,7 @@ class BasicStatistics(ComparerFunction):
                             "Invalid comparison sign -> use gt for > or lt for <"
                         )
                 self.logger.info(" ")
-            # Equipment
+            # EQ
             elif data.type == self.config.filename_type[1]:
                 for item in sorted(df[self.config.columns[data.index][3]].unique()):
                     value = df.loc[
@@ -85,7 +85,7 @@ class BasicStatistics(ComparerFunction):
                         self.config.columns[data.index][3],
                     ].count()
                     self.logger.info(f"Found {value} {item} {data.type}")
-            # sensors
+            # S
             elif data.type == self.config.filename_type[2]:
                 df_number = self._preprocessing(df, debug, data)
                 len_fil = len(df[self.config.columns[2][2]].unique())
